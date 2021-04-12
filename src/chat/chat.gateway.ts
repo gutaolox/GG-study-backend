@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import {
   WebSocketGateway,
   SubscribeMessage,
@@ -6,6 +7,7 @@ import {
   WsResponse,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { WsGuard } from 'src/auth/ws.guard';
 import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
@@ -16,6 +18,7 @@ export class ChatGateway {
   server: Server;
   constructor(private readonly chatService: ChatService) {}
 
+  @UseGuards(WsGuard)
   @SubscribeMessage('createChat')
   create(@MessageBody() createChatDto: CreateChatDto): WsResponse<any> {
     const event = 'teste';
