@@ -5,7 +5,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { jwtConstants } from '../utils/constants';
 
 @Injectable()
 export class UsersService {
