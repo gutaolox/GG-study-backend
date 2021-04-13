@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, ObjectId } from 'mongoose';
+import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Prop({ get: (value) => value?.toString() })
+  @Prop({ get: (value: any) => value?.toString() })
   _id: mongoose.Schema.Types.ObjectId;
 
   @Prop({ index: true, unique: true, required: true })

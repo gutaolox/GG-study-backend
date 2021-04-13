@@ -1,5 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { rootMongooseTestModule } from '../test/mongo.mock';
+import {
+  closeInMongodConnection,
+  rootMongooseTestModule,
+} from '../test/mongo.mock';
 import { AppController } from './app.controller';
 import { AppModule } from './app.module';
 import { AppService } from './app.service';
@@ -15,6 +18,10 @@ describe('AppController', () => {
     }).compile();
 
     appController = app.get<AppController>(AppController);
+  });
+
+  afterAll(async () => {
+    await closeInMongodConnection();
   });
 
   describe('root', () => {

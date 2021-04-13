@@ -6,7 +6,10 @@ import { UsersModule } from '../users/users.module';
 import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { rootMongooseTestModule } from '../../test/mongo.mock';
+import {
+  closeInMongodConnection,
+  rootMongooseTestModule,
+} from '../../test/mongo.mock';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { jwtConstants } from '../utils/constants';
@@ -30,6 +33,10 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
+  });
+
+  afterAll(async () => {
+    await closeInMongodConnection();
   });
 
   it('should be defined', () => {

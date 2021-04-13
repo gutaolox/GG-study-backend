@@ -3,7 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersModule } from './users.module';
 import { UsersService } from './users.service';
 import { User, UserSchema } from './entities/user.entity';
-import { rootMongooseTestModule } from '../../test/mongo.mock';
+import {
+  closeInMongodConnection,
+  rootMongooseTestModule,
+} from '../../test/mongo.mock';
 
 describe('UsersService', () => {
   let service: UsersService;
@@ -18,6 +21,10 @@ describe('UsersService', () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
+  });
+
+  afterAll(async () => {
+    await closeInMongodConnection();
   });
 
   it('should be defined', () => {
