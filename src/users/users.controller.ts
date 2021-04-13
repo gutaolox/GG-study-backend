@@ -11,7 +11,6 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Dog } from '../dogs/entities/dog.entity';
 import { User } from './entities/user.entity';
 import { Public } from '../metadata.definition';
 
