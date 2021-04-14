@@ -17,16 +17,16 @@ export class ChatGateway {
   constructor(private readonly chatService: ChatService) {}
 
   @SubscribeMessage('createChat')
-  create(@MessageBody() createChatDto: CreateChatDto): WsResponse<any> {
-    const event = 'teste';
+  async create(@MessageBody() createChatDto: CreateChatDto) {
+    const event = 'message';
     console.log('chegouy');
-    this.server.emit(event, this.chatService.create(createChatDto));
-    return { event, data: this.chatService.create(createChatDto) };
+    this.server.emit(event, await this.chatService.create(createChatDto));
   }
 
   @SubscribeMessage('findAllChat')
-  findAll() {
-    return this.chatService.findAll();
+  async findAll() {
+    console.log(this.chatService.findAll());
+    return { event: 'messages', data: await this.chatService.findAll() };
   }
 
   @SubscribeMessage('findOneChat')

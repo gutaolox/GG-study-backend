@@ -1,15 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
+import { Chat, ChatDocument } from './entities/chat.entity';
 
 @Injectable()
 export class ChatService {
-  create(createChatDto: CreateChatDto) {
-    return 'This action adds a new chat';
+  constructor(@InjectModel(Chat.name) private chatModel: Model<ChatDocument>) {}
+  async create(createChatDto: CreateChatDto): Promise<Chat> {
+    const createdChat = new this.chatModel(createChatDto);
+    createdChat._id = Types.ObjectId();
+    //Regra de negocio
+    return createdChat.save();
   }
 
-  findAll() {
-    return `This action returns all chat`;
+  async findAll() {
+    return await this.chatModel.find().exec();
   }
 
   findOne(id: number) {
