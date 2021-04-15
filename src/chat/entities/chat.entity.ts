@@ -13,7 +13,10 @@ export class Chat {
   from: string;
 
   @Prop({ required: true })
-  message: string;
+  text: string;
+
+  @Prop({ required: true })
+  date: Date;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);
