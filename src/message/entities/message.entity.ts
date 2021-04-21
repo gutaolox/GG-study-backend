@@ -2,10 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 
-export type ChatDocument = Chat & Document;
+export type MessageDocument = Message & Document;
 
 @Schema()
-export class Chat {
+export class Message {
   @Prop({ get: (value: any) => value?.toString() })
   _id: mongoose.Schema.Types.ObjectId;
 
@@ -19,4 +19,4 @@ export class Chat {
   date: Date;
 }
 
-export const ChatSchema = SchemaFactory.createForClass(Chat);
+export const MessageSchema = SchemaFactory.createForClass(Message);
