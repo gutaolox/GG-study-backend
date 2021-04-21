@@ -40,9 +40,11 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
+    "simple-peer": "^9.11.0",
     "socket.io": "^4.0.1",
     "socket.io-redis": "^6.1.0",
-    "swagger-ui-express": "^4.1.6"
+    "swagger-ui-express": "^4.1.6",
+    "wrtc": "^0.4.7"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
@@ -51,9 +53,10 @@
     "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.11",
     "@types/jest": "^26.0.22",
-    "@types/node": "^14.14.36",
+    "@types/node": "^14.14.41",
     "@types/passport-jwt": "^3.0.5",
     "@types/passport-local": "^1.0.33",
+    "@types/simple-peer": "^9.6.2",
     "@types/socket.io": "^2.1.13",
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^4.19.0",
