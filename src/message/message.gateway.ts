@@ -19,7 +19,6 @@ export class MessageGateway {
   @SubscribeMessage('createMessage')
   async create(@MessageBody() createMessageDto: CreateMessageDto) {
     const event = 'message';
-    console.log('chegou');
     this.server.emit(event, await this.messageService.create(createMessageDto));
   }
 

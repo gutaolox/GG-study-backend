@@ -16,14 +16,19 @@ export class AuthService {
     const hash = await bcrypt.hash(pass + user.salt, user.salt);
 
     if (user.password === hash) {
-      const { _id, username, role } = user;
-      return { _id, username, role };
+      const { _id, username, role, name } = user;
+      return { _id, username, role, name };
     }
     return null;
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user._id, role: user.role };
+    const payload = {
+      username: user.username,
+      sub: user._id,
+      role: user.role,
+      name: user.name,
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };
