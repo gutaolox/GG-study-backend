@@ -40,7 +40,7 @@ export class ClassRoom {
       },
     ]),
   )
-  students: Record<string, any[]>;
+  students: Record<string, any>;
 
   @Prop(
     raw({
