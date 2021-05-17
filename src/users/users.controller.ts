@@ -45,7 +45,7 @@ export class UsersController {
     description: 'Find one user',
     type: User,
   })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.usersService.findOne(id);
   }
 

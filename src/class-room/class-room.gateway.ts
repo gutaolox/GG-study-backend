@@ -11,7 +11,9 @@ import { CreateClassRoomDto } from './dto/create-class-room.dto';
 import { UpdateClassRoomDto } from './dto/update-class-room.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Server, Socket } from 'socket.io';
-import { PeerService } from 'src/utils/peer.services';
+import { ConnectedStudent } from './dto/connected-student.dto';
+import { UsersService } from 'src/users/users.service';
+import { generateTwilloToken } from 'src/auth/jwt.twillo';
 
 @WebSocketGateway()
 export class ClassRoomGateway {
@@ -19,35 +21,32 @@ export class ClassRoomGateway {
   server: Server;
 
   classes: any[];
-  constructor(private readonly classRoomService: ClassRoomService) {
+  constructor(
+    private readonly classRoomService: ClassRoomService,
+    private readonly usersService: UsersService,
+  ) {
     this.classes = [];
   }
 
   //@UseGuards(JwtAuthGuard)
   @SubscribeMessage('createClassRoom')
-  create(
+  async create(
     @ConnectedSocket() client: Socket,
     @MessageBody() createClassRoomDto: CreateClassRoomDto,
   ) {
-    return this.classRoomService.create(createClassRoomDto, client.id);
-  }
+    const newClass = await this.classRoomService.create(
+      createClassRoomDto,
+      client.id,
+    );
 
-  @SubscribeMessage('callUser')
-  createPeer(@ConnectedSocket() client: Socket, @MessageBody() peerInfo: any) {
-    let selectedClass = this.classes.find(
-      (auxClass) => auxClass.id === peerInfo.classId,
+    const professor = await this.usersService.findOne(
+      createClassRoomDto.professorId,
     );
-    if (!selectedClass) {
-      selectedClass = {
-        id: peerInfo.classId,
-        peerService: new PeerService(),
-      };
-      this.classes.push(selectedClass);
-    }
-    const newPeerSevice = selectedClass.peerService;
-    newPeerSevice.addPeer(peerInfo.signalData, (signal) =>
-      this.server.to(client.id).emit('callAccepted', signal),
-    );
+
+    client.emit('classCreated', {
+      _id: newClass._id,
+      connectToken: generateTwilloToken(professor.username, newClass._id),
+    });
   }
 
   @SubscribeMessage('findAllClassRoom')
@@ -63,13 +62,34 @@ export class ClassRoomGateway {
     return this.classRoomService.findOne(id);
   }
 
-  @SubscribeMessage('updateClassRoom')
-  update(@MessageBody() updateClassRoomDto: UpdateClassRoomDto) {
-    return this.classRoomService.update(
-      updateClassRoomDto.id,
-      updateClassRoomDto,
+  @SubscribeMessage('addStudent')
+  async addStudent(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() connectedStudent: ConnectedStudent,
+  ) {
+    this.classRoomService.addStudent(client.id, connectedStudent);
+    const newStudent = await this.usersService.findOne(
+      connectedStudent.idStudent,
     );
+    client.emit('connectToken', {
+      videoToken: generateTwilloToken(
+        newStudent.username,
+        connectedStudent.idClass,
+      ),
+    });
+    this.server.emit('newStudent', {
+      id: newStudent._id,
+      name: newStudent.name,
+    });
   }
+
+  // @SubscribeMessage('updateClassRoom')
+  // update(@MessageBody() updateClassRoomDto: UpdateClassRoomDto) {
+  //   return this.classRoomService.update(
+  //     updateClassRoomDto.id,
+  //     updateClassRoomDto,
+  //   );
+  // }
 
   @SubscribeMessage('removeClassRoom')
   remove(@MessageBody() id: number) {

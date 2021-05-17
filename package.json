@@ -44,6 +44,7 @@
     "socket.io": "^4.0.1",
     "socket.io-redis": "^6.1.0",
     "swagger-ui-express": "^4.1.6",
+    "twilio": "^3.62.0",
     "wrtc": "^0.4.7"
   },
   "devDependencies": {

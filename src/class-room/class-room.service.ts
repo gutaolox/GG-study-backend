@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { ConnectedStudent } from './dto/connected-student.dto';
 import { CreateClassRoomDto } from './dto/create-class-room.dto';
 import { UpdateClassRoomDto } from './dto/update-class-room.dto';
 import { ClassRoom, ClassRoomDocument } from './entities/class-room.entity';
@@ -25,12 +26,21 @@ export class ClassRoomService {
     return await this.classRoomModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} classRoom`;
+  async findOne(id: number) {
+    return await this.classRoomModel.findById(id).exec();
   }
 
-  update(id: number, updateClassRoomDto: UpdateClassRoomDto) {
-    return `This action updates a #${id} classRoom`;
+  update(id: number, updateClassRoom: ClassRoom) {
+    return this.classRoomModel.updateOne({ _id: id }, updateClassRoom);
+  }
+
+  async addStudent(idClient: string, addInfo: ConnectedStudent) {
+    const onlineClass = await this.findOne(addInfo.idClass);
+    onlineClass.students.push({
+      user: Types.ObjectId(addInfo.idStudent),
+      clientId: idClient,
+    });
+    this.update(addInfo.idClass, onlineClass);
   }
 
   remove(id: number) {
