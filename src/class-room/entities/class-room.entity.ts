@@ -10,6 +10,9 @@ export class ClassRoom {
   @Prop({ get: (value: any) => value?.toString() })
   _id: mongoose.Schema.Types.ObjectId;
 
+  @Prop()
+  name: string;
+
   @Prop({ default: Date.now() })
   startDate: Date;
 

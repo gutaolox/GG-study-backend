@@ -19,6 +19,7 @@ export class ClassRoomService {
       user: Types.ObjectId(createClassRoomDto.professorId),
       clientId,
     };
+    createdClassRoom.name = createClassRoomDto.name;
     return createdClassRoom.save();
   }
 
