@@ -41,7 +41,7 @@ export class ClassRoomService {
       user: Types.ObjectId(addInfo.idStudent),
       clientId: idClient,
     });
-    this.update(addInfo.idClass, onlineClass);
+    onlineClass.save();
   }
 
   remove(id: number) {
