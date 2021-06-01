@@ -45,7 +45,7 @@ export class ClassRoomGateway {
 
     client.emit('classCreated', {
       _id: newClass._id,
-      connectToken: generateTwilloToken(professor.username, newClass._id),
+      connectToken: generateTwilloToken(professor.name, newClass._id),
     });
   }
 
@@ -73,7 +73,7 @@ export class ClassRoomGateway {
     );
     client.emit('connectToken', {
       videoToken: generateTwilloToken(
-        newStudent.username,
+        newStudent.name,
         connectedStudent.idClass,
       ),
     });

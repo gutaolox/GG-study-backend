@@ -23,12 +23,12 @@ export class ClassRoomService {
     return createdClassRoom.save();
   }
 
-  async findAll() {
-    return await this.classRoomModel.find().exec();
+  findAll() {
+    return this.classRoomModel.find().exec();
   }
 
-  async findOne(id: number) {
-    return await this.classRoomModel.findById(id).exec();
+  findOne(id: number) {
+    return this.classRoomModel.findById(id).exec();
   }
 
   update(id: number, updateClassRoom: ClassRoom) {
