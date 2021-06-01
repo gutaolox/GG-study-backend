@@ -27,7 +27,7 @@ export class AppController {
   }
 
   @Get('profile')
-  @Roles(Role.Admin)
+  //@Roles(Role.Admin)
   getProfile(@Request() req) {
     return req.user;
   }
