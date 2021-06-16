@@ -5,7 +5,7 @@ import { SocketIoAdapter } from './Adapter/socket.io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: 'http://localhost:3000' });
+  app.enableCors({ origin: '*' });
   app.useWebSocketAdapter(new SocketIoAdapter(app, true));
   const config = new DocumentBuilder()
     .setTitle('GG study Api')
@@ -17,6 +17,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(4000);
+  await app.listen(process.env.PORT || 4000);
 }
 bootstrap();
