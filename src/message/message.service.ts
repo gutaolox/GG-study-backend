@@ -21,6 +21,10 @@ export class MessageService {
     return await this.messageModel.find().exec();
   }
 
+  async findByClass(idClass: string) {
+    return await this.messageModel.find({ classRoom: idClass }).exec();
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} message`;
   }

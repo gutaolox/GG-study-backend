@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { ClassRoom } from 'src/class-room/entities/class-room.entity';
 
@@ -19,13 +19,11 @@ export class Message {
   @Prop({ required: true })
   date: Date;
 
-  @Prop(
-    raw({
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'ClassRoom',
-    }),
-  )
-  classRoom: ClassRoom;
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ClassRoom',
+  })
+  classRoom: ClassRoom | Types.ObjectId;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

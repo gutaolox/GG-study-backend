@@ -23,8 +23,8 @@ export class MessageGateway {
   }
 
   @SubscribeMessage('findAllMessage')
-  async findAll() {
-    console.log(this.messageService.findAll());
+  async findAllByClass(@MessageBody() idClass: string) {
+    console.log(this.messageService.findByClass(idClass));
     return { event: 'messages', data: await this.messageService.findAll() };
   }
 

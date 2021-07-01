@@ -1,5 +1,5 @@
 export class CreateMessageDto {
-  idClass: string;
+  classRoom: string;
   from: string;
   text: string;
   date: Date;
