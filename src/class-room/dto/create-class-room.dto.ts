@@ -1,4 +1,3 @@
 export class CreateClassRoomDto {
-  professorId: number;
-  name: string;
+  idClass: number;
 }

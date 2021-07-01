@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Schema, Types } from 'mongoose';
+import { Message } from 'src/message/entities/message.entity';
 import { ConnectedStudent } from './dto/connected-student.dto';
 import { CreateClassRoomDto } from './dto/create-class-room.dto';
 import { UpdateClassRoomDto } from './dto/update-class-room.dto';
@@ -12,22 +13,12 @@ export class ClassRoomService {
     @InjectModel(ClassRoom.name)
     private classRoomModel: Model<ClassRoomDocument>,
   ) {}
-  create(createClassRoomDto: CreateClassRoomDto, clientId: string) {
-    const createdClassRoom = new this.classRoomModel();
-    createdClassRoom._id = Types.ObjectId();
-    createdClassRoom.professor = {
-      user: Types.ObjectId(createClassRoomDto.professorId),
-      clientId,
-    };
-    createdClassRoom.name = createClassRoomDto.name;
-    return createdClassRoom.save();
-  }
 
   findAll() {
     return this.classRoomModel.find().exec();
   }
 
-  findOne(id: number) {
+  findOne(id: number | string) {
     return this.classRoomModel.findById(id).exec();
   }
 
@@ -42,6 +33,13 @@ export class ClassRoomService {
       clientId: idClient,
     });
     onlineClass.save();
+  }
+
+  async setClassState(idClass: number, inClass: boolean) {
+    const onlineClass = await this.findOne(idClass);
+    onlineClass.inClass = inClass;
+    onlineClass.save();
+    return onlineClass;
   }
 
   remove(id: number) {

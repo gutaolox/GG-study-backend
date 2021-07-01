@@ -10,15 +10,6 @@ export class ClassRoom {
   @Prop({ get: (value: any) => value?.toString() })
   _id: mongoose.Schema.Types.ObjectId;
 
-  @Prop()
-  name: string;
-
-  @Prop({ default: Date.now() })
-  startDate: Date;
-
-  @Prop()
-  finishDate: Date;
-
   @Prop(
     raw({
       user: {
@@ -30,6 +21,29 @@ export class ClassRoom {
     }),
   )
   professor: Record<string, any>;
+
+  @Prop()
+  inClass: boolean;
+
+  @Prop(
+    raw([
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          get: (value: any) => value?.toString(),
+        },
+        clientId: { type: String },
+      },
+    ]),
+  )
+  onlineStudents: Record<string, any>;
+
+  @Prop()
+  category: string;
+
+  @Prop()
+  group: string;
 
   @Prop(
     raw([
@@ -45,13 +59,8 @@ export class ClassRoom {
   )
   students: Record<string, any>;
 
-  @Prop(
-    raw({
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Message',
-    }),
-  )
-  messages: Message[];
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }] })
+  chat: Message[];
 }
 
 export const ClassRoomSchema = SchemaFactory.createForClass(ClassRoom);

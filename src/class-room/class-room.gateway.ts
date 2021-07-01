@@ -29,24 +29,35 @@ export class ClassRoomGateway {
   }
 
   //@UseGuards(JwtAuthGuard)
-  @SubscribeMessage('createClassRoom')
+  @SubscribeMessage('initClassroom')
   async create(
     @ConnectedSocket() client: Socket,
     @MessageBody() createClassRoomDto: CreateClassRoomDto,
   ) {
-    const newClass = await this.classRoomService.create(
-      createClassRoomDto,
-      client.id,
+    const newClass = await this.classRoomService.setClassState(
+      createClassRoomDto.idClass,
+      true,
     );
 
-    const professor = await this.usersService.findOne(
-      createClassRoomDto.professorId,
-    );
+    const professor = await this.usersService.findOne(newClass.professor.user);
 
     client.emit('classCreated', {
       _id: newClass._id,
       connectToken: generateTwilloToken(professor.name, newClass._id),
     });
+  }
+
+  @SubscribeMessage('closeClassroom')
+  async close(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() createClassRoomDto: CreateClassRoomDto,
+  ) {
+    await this.classRoomService.setClassState(
+      createClassRoomDto.idClass,
+      false,
+    );
+
+    client.emit('classClosed');
   }
 
   @SubscribeMessage('findAllClassRoom')
