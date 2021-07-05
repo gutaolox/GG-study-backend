@@ -35,9 +35,10 @@ export class ClassRoomService {
     onlineClass.save();
   }
 
-  async setClassState(idClass: number, inClass: boolean) {
+  async setClassState(idClass: number, inClass: boolean, clientId: string) {
     const onlineClass = await this.findOne(idClass);
     onlineClass.inClass = inClass;
+    onlineClass.professor.clientId = clientId;
     onlineClass.save();
     return onlineClass;
   }

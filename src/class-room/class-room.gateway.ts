@@ -37,8 +37,9 @@ export class ClassRoomGateway {
     const newClass = await this.classRoomService.setClassState(
       createClassRoomDto.idClass,
       true,
+      client.id,
     );
-
+    console.log(newClass);
     const professor = await this.usersService.findOne(newClass.professor.user);
 
     client.emit('classCreated', {
@@ -55,9 +56,10 @@ export class ClassRoomGateway {
     await this.classRoomService.setClassState(
       createClassRoomDto.idClass,
       false,
+      client.id,
     );
 
-    client.emit('classClosed');
+    this.server.emit('classClosed');
   }
 
   @SubscribeMessage('findAllClassRoom')
