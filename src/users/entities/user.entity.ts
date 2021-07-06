@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
+import { ClassRoom } from 'src/class-room/entities/class-room.entity';
 
 export type UserDocument = User & Document;
 
@@ -23,6 +24,9 @@ export class User {
 
   @Prop({ required: true })
   salt: string;
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ClassRoom' }] })
+  classes: ClassRoom[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
