@@ -10,6 +10,7 @@ import { RolesGuard } from './auth/roles.guard';
 import { ClassRoomModule } from './class-room/class-room.module';
 import { MessageModule } from './message/message.module';
 import { PresentationsModule } from './presentations/presentations.module';
+import { QuestionsModule } from './questions/questions.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 @Module({
@@ -20,6 +21,7 @@ dotenv.config();
     ClassRoomModule,
     MessageModule,
     PresentationsModule,
+    QuestionsModule,
   ],
   controllers: [AppController],
   providers: [
