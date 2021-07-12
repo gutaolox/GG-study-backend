@@ -15,6 +15,7 @@ import { ConnectedStudent } from './dto/connected-student.dto';
 import { UsersService } from 'src/users/users.service';
 import { generateTwilloToken } from 'src/auth/jwt.twillo';
 import { User } from 'src/users/entities/user.entity';
+import { PageDto } from './dto/new-page.dto';
 
 @WebSocketGateway()
 export class ClassRoomGateway {
@@ -45,6 +46,19 @@ export class ClassRoomGateway {
     client.emit('classCreated', {
       _id: newClass._id,
       connectToken: generateTwilloToken(professor.name, newClass._id),
+      page: newClass.page,
+      totalPages: newClass.totalPage,
+    });
+  }
+
+  @SubscribeMessage('updatePage')
+  async setPage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() newPageDto: PageDto,
+  ) {
+    await this.classRoomService.setPage(newPageDto.idClass, newPageDto.newPage);
+    this.server.emit('newPage', {
+      newPage: newPageDto.newPage,
     });
   }
 
@@ -91,7 +105,10 @@ export class ClassRoomGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() connectedStudent: ConnectedStudent,
   ) {
-    this.classRoomService.addStudent(client.id, connectedStudent);
+    const newClass = await this.classRoomService.addStudent(
+      client.id,
+      connectedStudent,
+    );
     const newStudent = await this.usersService.findOne(
       connectedStudent.idStudent,
     );
@@ -100,6 +117,8 @@ export class ClassRoomGateway {
         newStudent.name,
         connectedStudent.idClass,
       ),
+      page: newClass.page,
+      totalPages: newClass.totalPage,
     });
     this.server.emit('newStudent', {
       id: newStudent._id,

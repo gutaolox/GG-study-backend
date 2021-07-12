@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RolesGuard } from './auth/roles.guard';
 import { ClassRoomModule } from './class-room/class-room.module';
 import { MessageModule } from './message/message.module';
+import { PresentationsModule } from './presentations/presentations.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 @Module({
@@ -18,6 +19,7 @@ dotenv.config();
     UsersModule,
     ClassRoomModule,
     MessageModule,
+    PresentationsModule,
   ],
   controllers: [AppController],
   providers: [

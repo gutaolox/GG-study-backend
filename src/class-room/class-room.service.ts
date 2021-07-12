@@ -45,14 +45,23 @@ export class ClassRoomService {
       user: Types.ObjectId(addInfo.idStudent),
       clientId: idClient,
     });
-    onlineClass.save();
+    return onlineClass.save();
   }
 
   async setClassState(idClass: number, inClass: boolean) {
     const onlineClass = await this.findOne(idClass);
     onlineClass.inClass = inClass;
+    if (inClass) {
+      onlineClass.page = 1;
+    }
     onlineClass.save();
     return onlineClass;
+  }
+
+  async setPage(idClass: string | number, newPage: number) {
+    const onlineClass = await this.findOne(idClass);
+    onlineClass.page = newPage;
+    onlineClass.save();
   }
 
   remove(id: number) {

@@ -25,6 +25,12 @@ export class ClassRoom {
   @Prop()
   inClass: boolean;
 
+  @Prop()
+  page: number;
+
+  @Prop()
+  totalPage: number;
+
   @Prop(
     raw([
       {
