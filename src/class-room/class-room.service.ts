@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Schema, Types } from 'mongoose';
 import { Message } from 'src/message/entities/message.entity';
+import { User } from 'src/users/entities/user.entity';
 import { ConnectedStudent } from './dto/connected-student.dto';
 import { CreateClassRoomDto } from './dto/create-class-room.dto';
 import { UpdateClassRoomDto } from './dto/update-class-room.dto';
@@ -18,6 +19,18 @@ export class ClassRoomService {
     return this.classRoomModel.find().exec();
   }
 
+  findAllByStudent(idStudent: string) {
+    return this.classRoomModel.find({ students: { $eq: idStudent } }).exec();
+  }
+
+  findAllByProfessor(id: number | string) {
+    return this.classRoomModel
+      .find({
+        'professor.user': Types.ObjectId(id),
+      })
+      .exec();
+  }
+
   findOne(id: number | string) {
     return this.classRoomModel.findById(id).exec();
   }
@@ -28,7 +41,7 @@ export class ClassRoomService {
 
   async addStudent(idClient: string, addInfo: ConnectedStudent) {
     const onlineClass = await this.findOne(addInfo.idClass);
-    onlineClass.students.push({
+    onlineClass.onlineStudents.push({
       user: Types.ObjectId(addInfo.idStudent),
       clientId: idClient,
     });

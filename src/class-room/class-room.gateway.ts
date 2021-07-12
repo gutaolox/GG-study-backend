@@ -14,6 +14,7 @@ import { Server, Socket } from 'socket.io';
 import { ConnectedStudent } from './dto/connected-student.dto';
 import { UsersService } from 'src/users/users.service';
 import { generateTwilloToken } from 'src/auth/jwt.twillo';
+import { User } from 'src/users/entities/user.entity';
 
 @WebSocketGateway()
 export class ClassRoomGateway {
@@ -60,12 +61,24 @@ export class ClassRoomGateway {
     client.emit('classClosed');
   }
 
-  @SubscribeMessage('findAllClassRoom')
-  async findAll() {
+  @SubscribeMessage('findAllClassRoomByProfessor')
+  async findAllClassesByProfessor(@MessageBody() idProfessor: number) {
     return {
-      event: 'getClassRoom',
-      data: await this.classRoomService.findAll(),
+      event: 'getClassRoomByProfessor',
+      data: await this.classRoomService.findAllByProfessor(idProfessor),
     };
+  }
+
+  @SubscribeMessage('findAllClassRoomByStudent')
+  async findAllClassesByStudent(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() idStudent: string,
+  ) {
+    console.log('findAllClassesByStudent', idStudent);
+    client.emit(
+      'getClassRoomByStudent',
+      await this.classRoomService.findAllByStudent(idStudent),
+    );
   }
 
   @SubscribeMessage('findOneClassRoom')

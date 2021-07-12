@@ -45,19 +45,8 @@ export class ClassRoom {
   @Prop()
   group: string;
 
-  @Prop(
-    raw([
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          get: (value: any) => value?.toString(),
-        },
-        clientId: { type: String },
-      },
-    ]),
-  )
-  students: Record<string, any>;
+  @Prop()
+  students: string[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }] })
   chat: Message[];
