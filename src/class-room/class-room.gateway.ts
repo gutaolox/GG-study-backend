@@ -74,7 +74,6 @@ export class ClassRoomGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() idStudent: string,
   ) {
-    console.log('findAllClassesByStudent', idStudent);
     client.emit(
       'getClassRoomByStudent',
       await this.classRoomService.findAllByStudent(idStudent),

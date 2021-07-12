@@ -20,7 +20,9 @@ export class ClassRoomService {
   }
 
   findAllByStudent(idStudent: string) {
-    return this.classRoomModel.find({ students: { $eq: idStudent } }).exec();
+    return this.classRoomModel
+      .find({ students: { $eq: idStudent }, inClass: true })
+      .exec();
   }
 
   findAllByProfessor(id: number | string) {
