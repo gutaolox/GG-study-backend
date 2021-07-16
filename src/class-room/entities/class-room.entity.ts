@@ -2,6 +2,7 @@ import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Message } from 'src/message/entities/message.entity';
+import { Question } from 'src/questions/entities/question.entity';
 
 export type ClassRoomDocument = ClassRoom & Document;
 
@@ -56,6 +57,9 @@ export class ClassRoom {
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }] })
   chat: Message[];
+
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }] })
+  questions: Question[];
 }
 
 export const ClassRoomSchema = SchemaFactory.createForClass(ClassRoom);

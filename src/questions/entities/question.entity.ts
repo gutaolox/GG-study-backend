@@ -3,8 +3,9 @@ import { Document, Types } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { ClassRoom } from 'src/class-room/entities/class-room.entity';
 
-export type MessageDocument = Question & Document;
+export type QuestionDocument = Question & Document;
 
+@Schema()
 export class Question {
   @Prop({ get: (value: any) => value?.toString() })
   _id: mongoose.Schema.Types.ObjectId;

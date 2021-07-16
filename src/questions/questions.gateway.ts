@@ -1,20 +1,35 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  SubscribeMessage,
+  MessageBody,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { QuestionsService } from './questions.service';
 import { CreateQuestionDto } from './dto/create-question.dto';
+import { Server } from 'socket.io';
 import { UpdateQuestionDto } from './dto/update-question.dto';
 
 @WebSocketGateway()
 export class QuestionsGateway {
+  @WebSocketServer()
+  server: Server;
   constructor(private readonly questionsService: QuestionsService) {}
 
   @SubscribeMessage('createQuestion')
-  create(@MessageBody() createQuestionDto: CreateQuestionDto) {
-    return this.questionsService.create(createQuestionDto);
+  async create(@MessageBody() createQuestionDto: CreateQuestionDto) {
+    console.log('createQuestionDto', createQuestionDto);
+    this.server.emit(
+      'question',
+      await this.questionsService.create(createQuestionDto),
+    );
   }
 
   @SubscribeMessage('findAllQuestions')
-  findAll() {
-    return this.questionsService.findAll();
+  async findAllByClass(@MessageBody() idClass: string) {
+    return {
+      event: 'questions',
+      data: await this.questionsService.findByClass(idClass),
+    };
   }
 
   @SubscribeMessage('findOneQuestion')
@@ -24,7 +39,10 @@ export class QuestionsGateway {
 
   @SubscribeMessage('updateQuestion')
   update(@MessageBody() updateQuestionDto: UpdateQuestionDto) {
-    return this.questionsService.update(updateQuestionDto.id, updateQuestionDto);
+    return this.questionsService.update(
+      updateQuestionDto.id,
+      updateQuestionDto,
+    );
   }
 
   @SubscribeMessage('removeQuestion')

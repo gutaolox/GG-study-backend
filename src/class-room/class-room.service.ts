@@ -37,6 +37,10 @@ export class ClassRoomService {
     return this.classRoomModel.findById(id).exec();
   }
 
+  findOneNoExec(id: number | string) {
+    return this.classRoomModel.findById(id);
+  }
+
   update(id: number, updateClassRoom: ClassRoom) {
     return this.classRoomModel.updateOne({ _id: id }, updateClassRoom);
   }
@@ -68,5 +72,12 @@ export class ClassRoomService {
 
   remove(id: number) {
     return `This action removes a #${id} classRoom`;
+  }
+
+  async findAllOnlineStudentsByClass(id: number | string) {
+    const onlineClass = await this.findOneNoExec(id)
+      .populate('onlineStudents.user', 'name username role')
+      .exec();
+    return onlineClass.onlineStudents;
   }
 }

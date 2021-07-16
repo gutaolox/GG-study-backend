@@ -137,4 +137,12 @@ export class ClassRoomGateway {
   remove(@MessageBody() id: number) {
     return this.classRoomService.remove(id);
   }
+
+  @SubscribeMessage('findAllOnlineStudentsByClass')
+  async findAllOnlineStudentsByClass(@MessageBody() idClass: number | string) {
+    return {
+      event: 'getAllOnlineStudentsByClass',
+      data: await this.classRoomService.findAllOnlineStudentsByClass(idClass),
+    };
+  }
 }
