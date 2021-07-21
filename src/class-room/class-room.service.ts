@@ -59,6 +59,8 @@ export class ClassRoomService {
     onlineClass.inClass = inClass;
     if (inClass) {
       onlineClass.page = 1;
+    } else {
+      onlineClass.onlineStudents = [];
     }
     onlineClass.save();
     return onlineClass;
