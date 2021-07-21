@@ -16,6 +16,7 @@ import { UsersService } from 'src/users/users.service';
 import { generateTwilloToken } from 'src/auth/jwt.twillo';
 import { User } from 'src/users/entities/user.entity';
 import { PageDto } from './dto/new-page.dto';
+import { PointDto } from './dto/point-model.dto';
 
 @WebSocketGateway()
 export class ClassRoomGateway {
@@ -60,6 +61,14 @@ export class ClassRoomGateway {
     this.server.emit('newPage', {
       newPage: newPageDto.newPage,
     });
+  }
+
+  @SubscribeMessage('updatePoint')
+  async setPoint(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() newPointDto: PointDto,
+  ) {
+    this.server.emit('newPoint', newPointDto);
   }
 
   @SubscribeMessage('closeClassroom')
