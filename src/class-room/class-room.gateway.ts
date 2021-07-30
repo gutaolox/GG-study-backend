@@ -117,20 +117,37 @@ export class ClassRoomGateway {
       client.id,
       connectedStudent,
     );
-    const newStudent = await this.usersService.findOne(
+    if (newClass) {
+      const newStudent = await this.usersService.findOne(
+        connectedStudent.idStudent,
+      );
+      client.emit('connectToken', {
+        videoToken: generateTwilloToken(
+          newStudent.name,
+          connectedStudent.idClass,
+        ),
+        page: newClass.page,
+        totalPages: newClass.totalPage,
+      });
+      this.server.emit('newStudent', {
+        id: newStudent._id,
+        name: newStudent.name,
+      });
+    }
+  }
+
+  @SubscribeMessage('quitClass')
+  async quitClass(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() connectedStudent: ConnectedStudent,
+  ) {
+    await this.classRoomService.removeStudent(client.id, connectedStudent);
+    const removedStudent = await this.usersService.findOne(
       connectedStudent.idStudent,
     );
-    client.emit('connectToken', {
-      videoToken: generateTwilloToken(
-        newStudent.name,
-        connectedStudent.idClass,
-      ),
-      page: newClass.page,
-      totalPages: newClass.totalPage,
-    });
-    this.server.emit('newStudent', {
-      id: newStudent._id,
-      name: newStudent.name,
+    this.server.emit('removedStudent', {
+      id: removedStudent._id,
+      name: removedStudent.name,
     });
   }
 

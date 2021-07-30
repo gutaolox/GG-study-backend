@@ -47,10 +47,26 @@ export class ClassRoomService {
 
   async addStudent(idClient: string, addInfo: ConnectedStudent) {
     const onlineClass = await this.findOne(addInfo.idClass);
+    if (
+      onlineClass.onlineStudents.some(
+        (x) => x.user == Types.ObjectId(addInfo.idStudent),
+      )
+    ) {
+      return null;
+    }
     onlineClass.onlineStudents.push({
       user: Types.ObjectId(addInfo.idStudent),
       clientId: idClient,
     });
+
+    return onlineClass.save();
+  }
+
+  async removeStudent(idClient: string, addInfo: ConnectedStudent) {
+    const onlineClass = await this.findOne(addInfo.idClass);
+    onlineClass.onlineStudents = onlineClass.onlineStudents.filter(
+      (x) => x.user != Types.ObjectId(addInfo.idStudent),
+    );
     return onlineClass.save();
   }
 
