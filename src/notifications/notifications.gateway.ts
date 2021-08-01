@@ -40,10 +40,12 @@ export class NotificationsGateway {
     console.log(filter);
     const notificationsList = await this.notificationsService.findClass(
       filter.idClass,
-      false,
+      true,
     );
     console.log(notificationsList);
-    client.emit('notifications', notificationsList);
+    if (notificationsList && notificationsList.length) {
+      client.emit('notifications', notificationsList);
+    }
   }
 
   @SubscribeMessage('releaseExercises')
