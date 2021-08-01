@@ -11,12 +11,8 @@ export class QuestionsService {
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
   ) {}
   async create(createQuestionDto: CreateQuestionDto): Promise<Question> {
-    console.log('aaa', createQuestionDto);
     const createdQuestion = new this.questionModel(createQuestionDto);
-    console.log('bbb', createdQuestion);
     createdQuestion._id = Types.ObjectId();
-    //Regra de negocio
-    console.log('create', createdQuestion);
     return createdQuestion.save();
   }
 

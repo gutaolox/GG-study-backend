@@ -23,8 +23,17 @@ export class NotificationsGateway {
   }
 
   @SubscribeMessage('findAllNotifications')
-  findAll() {
-    return this.notificationsService.findAll();
+  async findAll(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() filter: NotificationDto,
+  ) {
+    const notificationsList = await this.notificationsService.findClass(
+      filter.idClass,
+      false,
+    );
+    if (notificationsList && notificationsList.length) {
+      client.emit('noFilterNotifications', notificationsList);
+    }
   }
 
   @SubscribeMessage('findOneNotification')

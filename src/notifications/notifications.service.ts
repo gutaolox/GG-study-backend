@@ -99,9 +99,11 @@ export class NotificationsService {
         '-answer',
       )
       .exec();
-    const othersNotification = await this.notificationModel.find({
-      type: { $ne: 'question' },
-    });
+    const othersNotification = await this.notificationModel
+      .find({
+        type: { $ne: 'question' },
+      })
+      .exec();
     exercises.sort((a, b) => b.order - a.order);
     const nextExercise = exercises[0];
     let lastExercise = exercises[1] ?? null;
