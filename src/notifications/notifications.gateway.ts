@@ -72,7 +72,7 @@ export class NotificationsGateway {
       filter.studentId,
       filter.answer,
     );
-    this.server.emit('showExercise', notificationsList);
+    client.emit('showExercise', notificationsList);
   }
 
   @SubscribeMessage('updateNotification')
