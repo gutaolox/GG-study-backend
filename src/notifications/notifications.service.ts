@@ -94,16 +94,21 @@ export class NotificationsService {
           released: true,
           $or: [{ order: nextOrder }, { order: nextOrder - 1 }],
           order: { $ne: 0 },
+          type: 'question',
         },
         '-answer',
       )
       .exec();
+    const othersNotification = await this.notificationModel.find({
+      type: { $ne: 'question' },
+    });
     exercises.sort((a, b) => b.order - a.order);
     const nextExercise = exercises[0];
     let lastExercise = exercises[1] ?? null;
     if (nextExercise.order === nextOrder - 1) {
       lastExercise = nextExercise;
     } else {
+      othersNotification.push(nextExercise);
       nextExercise.participants.find(
         (participant) => participant.user === Types.ObjectId(idStudent),
       ).timeStarted = Date.now();
@@ -118,6 +123,7 @@ export class NotificationsService {
       lastExercise.participants[userIndex].timeFinished = Date.now();
       lastExercise.save();
     }
-    return nextExercise;
+
+    return othersNotification.sort((a, b) => a.timeReleased - b.timeReleased);
   }
 }
