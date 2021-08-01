@@ -7,7 +7,6 @@ export class OnlineStudent {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    get: (value: any) => value?.toString(),
   })
   user: User | mongoose.Types.ObjectId;
 

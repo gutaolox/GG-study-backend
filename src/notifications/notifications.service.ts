@@ -74,7 +74,7 @@ export class NotificationsService {
             timeFinished: 0,
           };
         });
-        exerciseReleased.save();
+        await exerciseReleased.save();
       }
     }
 
@@ -105,6 +105,7 @@ export class NotificationsService {
     exercises.sort((a, b) => b.order - a.order);
     const nextExercise = exercises[0];
     let lastExercise = exercises[1] ?? null;
+
     if (nextExercise.order === nextOrder - 1) {
       lastExercise = nextExercise;
     } else {
@@ -117,11 +118,19 @@ export class NotificationsService {
 
     if (lastExercise) {
       const userIndex = lastExercise.participants.findIndex(
-        (participant) => participant.user === Types.ObjectId(idStudent),
+        (participant) => participant.user.toString() === idStudent,
       );
-      lastExercise.participants[userIndex].answer = answer;
-      lastExercise.participants[userIndex].timeFinished = Date.now();
-      lastExercise.save();
+      const changeParticipants = [...lastExercise.participants];
+      changeParticipants[userIndex].answer = answer;
+      changeParticipants[userIndex].timeFinished = Date.now();
+      lastExercise.participants = changeParticipants;
+      lastExercise.participants.splice(userIndex, 1, {
+        user: changeParticipants[userIndex].user,
+        answer: answer,
+        timeStarted: changeParticipants[userIndex].timeStarted,
+        timeFinished: Date.now(),
+      });
+      await lastExercise.save();
     }
 
     return othersNotification.sort((a, b) => a.timeReleased - b.timeReleased);
