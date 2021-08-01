@@ -21,7 +21,7 @@ export class ClassRoomService {
 
   findAllByStudent(idStudent: string) {
     return this.classRoomModel
-      .find({ students: { $eq: idStudent }, inClass: true })
+      .find({ students: Types.ObjectId(idStudent), inClass: true })
       .exec();
   }
 

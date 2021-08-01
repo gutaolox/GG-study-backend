@@ -3,6 +3,8 @@ import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Message } from 'src/message/entities/message.entity';
 import { Question } from 'src/questions/entities/question.entity';
+import { OnlineStudent } from './online-student.entity';
+import { User } from 'src/users/entities/user.entity';
 
 export type ClassRoomDocument = ClassRoom & Document;
 
@@ -13,11 +15,7 @@ export class ClassRoom {
 
   @Prop(
     raw({
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        get: (value: any) => value?.toString(),
-      },
+      user: {},
       clientId: { type: String },
     }),
   )
@@ -32,19 +30,8 @@ export class ClassRoom {
   @Prop()
   totalPage: number;
 
-  @Prop(
-    raw([
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-          get: (value: any) => value?.toString(),
-        },
-        clientId: { type: String },
-      },
-    ]),
-  )
-  onlineStudents: Record<string, any>;
+  @Prop()
+  onlineStudents: OnlineStudent[];
 
   @Prop()
   category: string;
@@ -52,8 +39,11 @@ export class ClassRoom {
   @Prop()
   group: string;
 
-  @Prop()
-  students: string[];
+  @Prop({
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'User',
+  })
+  students: User[] | mongoose.Types.ObjectId[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Message' }] })
   chat: Message[];

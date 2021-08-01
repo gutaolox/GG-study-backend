@@ -13,5 +13,6 @@ import { UsersModule } from 'src/users/users.module';
     UsersModule,
   ],
   providers: [ClassRoomGateway, ClassRoomService],
+  exports: [ClassRoomService],
 })
 export class ClassRoomModule {}

@@ -11,6 +11,7 @@ import { ClassRoomModule } from './class-room/class-room.module';
 import { MessageModule } from './message/message.module';
 import { PresentationsModule } from './presentations/presentations.module';
 import { QuestionsModule } from './questions/questions.module';
+import { NotificationsModule } from './notifications/notifications.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 @Module({
@@ -22,6 +23,7 @@ dotenv.config();
     MessageModule,
     PresentationsModule,
     QuestionsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [
