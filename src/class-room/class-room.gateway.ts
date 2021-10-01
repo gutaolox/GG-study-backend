@@ -8,13 +8,10 @@ import {
 } from '@nestjs/websockets';
 import { ClassRoomService } from './class-room.service';
 import { CreateClassRoomDto } from './dto/create-class-room.dto';
-import { UpdateClassRoomDto } from './dto/update-class-room.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Server, Socket } from 'socket.io';
 import { ConnectedStudent } from './dto/connected-student.dto';
 import { UsersService } from 'src/users/users.service';
 import { generateTwilloToken } from 'src/auth/jwt.twillo';
-import { User } from 'src/users/entities/user.entity';
 import { PageDto } from './dto/new-page.dto';
 import { PointDto } from './dto/point-model.dto';
 
@@ -150,14 +147,6 @@ export class ClassRoomGateway {
       name: removedStudent.name,
     });
   }
-
-  // @SubscribeMessage('updateClassRoom')
-  // update(@MessageBody() updateClassRoomDto: UpdateClassRoomDto) {
-  //   return this.classRoomService.update(
-  //     updateClassRoomDto.id,
-  //     updateClassRoomDto,
-  //   );
-  // }
 
   @SubscribeMessage('removeClassRoom')
   remove(@MessageBody() id: number) {

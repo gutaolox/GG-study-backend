@@ -9,6 +9,7 @@ import {
   Notification,
   NotificationDocument,
 } from './entities/notification.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class NotificationsService {
@@ -29,12 +30,17 @@ export class NotificationsService {
     return this.notificationModel.findById(id).exec();
   }
 
-  findClass(idClass: string, filterNotReleased: boolean) {
+  findClass(idClass: string, filterNotReleased: boolean, getAnswer = false) {
     return this.notificationModel
-      .find({
-        classRoom: idClass,
-        $or: [{ released: true }, { released: filterNotReleased }],
-      })
+      .find(
+        {
+          classRoom: idClass,
+          $or: [{ released: true }, { released: filterNotReleased }],
+        },
+        getAnswer ? '' : '-answer',
+      )
+      .sort('order')
+      .populate('participants.user', '_id name', 'User')
       .exec();
   }
 
@@ -46,39 +52,49 @@ export class NotificationsService {
     return `This action removes a #${id} notification`;
   }
 
-  async updateExercises(
-    idClass: string,
-    orders: string[],
-    exerciseStatus: boolean,
-  ) {
+  async newStudent(idClass: string, idStudent: string) {
+    const exercises = await this.findClass(idClass, true);
+    let initFirst = true;
+    for (const exerciseReleased of exercises) {
+      if (exerciseReleased) {
+        exerciseReleased.participants.push({
+          user: Types.ObjectId(idStudent),
+          answer: '',
+          timeStarted: initFirst ? Date.now() : 0,
+          timeFinished: 0,
+        });
+        initFirst = false;
+        await exerciseReleased.save();
+      }
+    }
+    return exercises;
+  }
+
+  async updateExercises(idClass: string) {
     const onlineUsers = await this.classRoomService.findAllOnlineStudentsByClass(
       idClass,
     );
     const exercises = await this.findClass(idClass, false);
     const orderValue = exercises.map((exercise) => exercise.order);
-    let lastOrder = Math.max(...orderValue);
-    for (const order of orders) {
-      const exerciseReleased = exercises.find(
-        (exercise) => exercise._id === order,
-      );
+    let initFirst = true;
+    for (const exerciseReleased of exercises) {
       if (exerciseReleased) {
         exerciseReleased.released = true;
-        lastOrder++;
-        exerciseReleased.order = lastOrder;
         exerciseReleased.timeReleased = Date.now();
         exerciseReleased.participants = onlineUsers.map((user) => {
           return {
             user: user.user,
             answer: '',
-            timeStarted: 0,
+            timeStarted: initFirst ? Date.now() : 0,
             timeFinished: 0,
           };
         });
+        initFirst = false;
         await exerciseReleased.save();
       }
     }
 
-    return this.findClass(idClass, false);
+    return exercises;
   }
 
   async nextExercise(
@@ -106,15 +122,25 @@ export class NotificationsService {
       .exec();
     exercises.sort((a, b) => b.order - a.order);
     const nextExercise = exercises[0];
+
     let lastExercise = exercises[1] ?? null;
 
     if (nextExercise.order === nextOrder - 1) {
       lastExercise = nextExercise;
     } else {
       othersNotification.push(nextExercise);
-      nextExercise.participants.find(
-        (participant) => participant.user === Types.ObjectId(idStudent),
-      ).timeStarted = Date.now();
+      const nextExerciseParticipantIndex = nextExercise.participants.findIndex(
+        (participant) => {
+          return participant.user.toString() === idStudent;
+        },
+      );
+
+      nextExercise.participants.splice(nextExerciseParticipantIndex, 1, {
+        user: nextExercise.participants[nextExerciseParticipantIndex].user,
+        answer: '',
+        timeStarted: Date.now(),
+        timeFinished: 0,
+      });
       nextExercise.save();
     }
 
@@ -123,9 +149,6 @@ export class NotificationsService {
         (participant) => participant.user.toString() === idStudent,
       );
       const changeParticipants = [...lastExercise.participants];
-      changeParticipants[userIndex].answer = answer;
-      changeParticipants[userIndex].timeFinished = Date.now();
-      lastExercise.participants = changeParticipants;
       lastExercise.participants.splice(userIndex, 1, {
         user: changeParticipants[userIndex].user,
         answer: answer,
@@ -134,7 +157,54 @@ export class NotificationsService {
       });
       await lastExercise.save();
     }
+  }
 
-    return othersNotification.sort((a, b) => a.timeReleased - b.timeReleased);
+  async calculateMetrics(idClass: string) {
+    const exercizes = await this.findClass(idClass, true, true);
+
+    return exercizes.map((exercize, index) => {
+      const toDo = exercize.participants.reduce((previousValue, nextValue) => {
+        return previousValue + nextValue.timeStarted ? 0 : 1;
+      }, 0);
+      const doing = exercize.participants.reduce((previousValue, nextValue) => {
+        return (
+          previousValue +
+          (nextValue.timeStarted && !nextValue.timeFinished ? 1 : 0)
+        );
+      }, 0);
+      const done = exercize.participants.reduce((previousValue, nextValue) => {
+        return (
+          previousValue +
+          (nextValue.timeStarted && nextValue.timeFinished ? 1 : 0)
+        );
+      }, 0);
+      const howManyGotIt = exercize.participants.reduce(
+        (previousValue, nextValue) => {
+          return previousValue + (nextValue.answer === exercize.answer ? 1 : 0);
+        },
+        0,
+      );
+      console.log(howManyGotIt);
+      return {
+        _id: exercize._id,
+        title: `Exercicio: ${exercize.order}`,
+        toDo,
+        doing,
+        done,
+        percentRight: `${(howManyGotIt / done) * 100}%`,
+        participants: exercize.participants
+          .map((participant) => {
+            if (participant.timeStarted && !participant.timeFinished) {
+              const user = participant.user as User;
+              return {
+                _id: user._id,
+                name: user.name,
+                timeStarted: participant.timeStarted,
+              };
+            }
+          })
+          .filter((participant) => !!participant),
+      };
+    });
   }
 }

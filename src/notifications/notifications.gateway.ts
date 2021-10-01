@@ -41,20 +41,35 @@ export class NotificationsGateway {
     return this.notificationsService.findOne(id);
   }
 
-  @SubscribeMessage('findClassNotification')
+  @SubscribeMessage('addingStudentClassNotification')
   async findByClass(
     @ConnectedSocket() client: Socket,
     @MessageBody() filter: NotificationDto,
   ) {
-    console.log(filter);
-    const notificationsList = await this.notificationsService.findClass(
+    const notificationsList = await this.notificationsService.newStudent(
       filter.idClass,
-      true,
+      filter.studentId,
     );
-    console.log(notificationsList);
     if (notificationsList && notificationsList.length) {
-      client.emit('notifications', notificationsList);
+      client.emit('notifications', {
+        notifications: notificationsList,
+        lastOrder: 1,
+      });
     }
+  }
+
+  @SubscribeMessage('getMetrics')
+  async getMetrics(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() filter: NotificationDto,
+  ) {
+    const metricsList = await this.notificationsService.calculateMetrics(
+      filter.idClass,
+    );
+
+    client.emit('metricsAnswer', {
+      metrics: metricsList,
+    });
   }
 
   @SubscribeMessage('releaseExercises')
@@ -64,10 +79,11 @@ export class NotificationsGateway {
   ) {
     const notificationsList = await this.notificationsService.updateExercises(
       filter.idClass,
-      filter.orders,
-      true,
     );
-    this.server.emit('notifications', notificationsList);
+    this.server.emit('notifications', {
+      notifications: notificationsList,
+      lastOrder: 1,
+    });
   }
 
   @SubscribeMessage('nextExercises')
@@ -75,13 +91,13 @@ export class NotificationsGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() filter: NotificationDto,
   ) {
-    const notificationsList = await this.notificationsService.nextExercise(
+    await this.notificationsService.nextExercise(
       filter.idClass,
       filter.nextOrder,
       filter.studentId,
       filter.answer,
     );
-    client.emit('showExercise', notificationsList);
+    //client.emit('showExercise', notificationsList);
   }
 
   @SubscribeMessage('updateNotification')

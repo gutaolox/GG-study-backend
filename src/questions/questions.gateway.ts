@@ -17,7 +17,6 @@ export class QuestionsGateway {
 
   @SubscribeMessage('createQuestion')
   async create(@MessageBody() createQuestionDto: CreateQuestionDto) {
-    console.log('createQuestionDto', createQuestionDto);
     this.server.emit(
       'question',
       await this.questionsService.create(createQuestionDto),

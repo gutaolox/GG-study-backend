@@ -93,10 +93,8 @@ export class ClassRoomService {
   }
 
   async findAllOnlineStudentsByClass(id: number | string) {
-    const onlineClass = await this.findOneNoExec(id)
-      //   .populate('onlineStudents.user', '_id name username role')
-      .exec();
-    // console.log('onlineClass.onlineStudents', onlineClass.onlineStudents);
+    const onlineClass = await this.findOneNoExec(id).exec();
+
     return onlineClass.onlineStudents;
   }
 }

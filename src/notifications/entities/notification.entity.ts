@@ -20,7 +20,7 @@ export class Notification {
   text: string;
 
   @Prop()
-  answer: number;
+  answer: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
