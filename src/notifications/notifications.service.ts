@@ -184,7 +184,6 @@ export class NotificationsService {
         },
         0,
       );
-      console.log(howManyGotIt);
       return {
         _id: exercize._id,
         title: `Exercicio: ${exercize.order}`,

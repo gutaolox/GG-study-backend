@@ -40,7 +40,6 @@ export class ClassRoomGateway {
     );
 
     const professor = await this.usersService.findOne(newClass.professor.user);
-
     client.emit('classCreated', {
       _id: newClass._id,
       connectToken: generateTwilloToken(professor.name, newClass._id),
