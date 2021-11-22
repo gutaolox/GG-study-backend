@@ -14,7 +14,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { Public } from '../metadata.definition';
 
-@ApiTags('dogs')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

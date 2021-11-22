@@ -18,8 +18,10 @@ export class MessageGateway {
 
   @SubscribeMessage('createMessage')
   async create(@MessageBody() createMessageDto: CreateMessageDto) {
-    const event = 'message';
-    this.server.emit(event, await this.messageService.create(createMessageDto));
+    this.server.emit(
+      'message',
+      await this.messageService.create(createMessageDto),
+    );
   }
 
   @SubscribeMessage('findAllMessage')
